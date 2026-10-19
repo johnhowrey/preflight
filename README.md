@@ -57,9 +57,10 @@ Full API reference: https://preflight.allthepossibles.com/docs
 
 ## Pricing
 
-The structural checks are free: no signup, no API key, rate-limited per caller
-IP. Pro ($19/month) and Basic ($5/month) add the semantic pass, content scans,
-and higher limits. Both are in the [Studio Bundle](https://allthepossibles.com).
+The structural checks are free: no signup, no API key, 20 scans a minute per
+caller IP. Basic ($5/month) raises that to 150 a minute. Pro ($19/month) raises
+it to 500 and adds the semantic pass and content scans. Pro is in the
+[Studio Bundle](https://allthepossibles.com).
 
 Listed in the official MCP Registry as `com.allthepossibles/preflight`.
 
