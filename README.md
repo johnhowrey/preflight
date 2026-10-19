@@ -7,26 +7,29 @@ Check an MCP server before your agent trusts it.
 
 ## What it does
 
-Preflight scans an MCP server the moment before your agent connects to it —
-before there's a human in the loop to notice something's wrong. It checks for:
+Preflight scans an MCP server the moment before your agent connects to it,
+before there is a human in the loop to notice something is wrong. It checks for:
 
-- **Unauthenticated transport** — did the server hand its full tool list to a
-  client with zero credentials, before anyone decided whether to trust it.
-- **Capability overreach** — does a tool grant filesystem, shell, or credential
-  access with no real scoping on the input, or does its schema actually
-  constrain what it can touch.
-- **Known-bad signatures** — does it match a documented supply-chain incident,
-  or contain an obfuscated payload hiding in plain text.
+- **Unauthenticated transport.** Did the server hand its full tool list to a
+  client with zero credentials, or accept a garbage bearer token, or an unsigned JWT.
+- **Cross-origin redirects.** Does the endpoint redirect to a host the user never configured.
+- **Capability overreach.** Does a tool grant filesystem, shell, or credential
+  access with no real scoping on the input, or does its schema constrain what it can touch.
+- **Blind writes.** A write or delete tool with no read-only counterpart on the same server.
+- **Unbounded destructive arguments.** A delete whose path, pattern or filter
+  argument accepts any string, with no enum, pattern, or length cap.
+- **Known-bad signatures.** A documented supply-chain incident, or an obfuscated
+  payload hiding in plain text.
+- **Prompt-injection phrasing** in tool descriptions, on Pro: a semantic pass
+  powered by Claude, plus the same check for any document an agent is about to read
+  (`scan_content`), and trust checks for VS Code extensions and Claude Skills.
 
-A fourth check — semantic detection of prompt-injection phrasing in tool
-descriptions, powered by Claude — is built and tested but currently gated off
-by default while we get billing in front of it. It'll ship as a paid tier.
+Tool annotations are honored: a tool marked `readOnlyHint` is not a write.
 
-We don't publish the exact detection patterns here on purpose — the same
-tradeoff every open security scanner makes, from antivirus signatures to WAF
-rules. What's public is the methodology and the results; the implementation
-that decides what specifically trips a finding stays close, so it's harder to
-write a tool description that slips past it on purpose.
+The exact detection patterns are not published here on purpose, the same
+tradeoff every open security scanner makes. The methodology and the results
+are public; what trips a finding stays close, so it is harder to write a tool
+description that slips past it.
 
 ## Using it
 
@@ -52,11 +55,13 @@ curl -X POST https://preflight.allthepossibles.com/api/scan \
 
 Full API reference: https://preflight.allthepossibles.com/docs
 
-## Free during preview
+## Pricing
 
-20 scans/minute per caller IP, no signup, no API key. That's a real limit on
-a real budget — if it's getting in the way of a legitimate use case, open an
-issue and say so.
+The structural checks are free: no signup, no API key, rate-limited per caller
+IP. Pro ($19/month) and Basic ($5/month) add the semantic pass, content scans,
+and higher limits. Both are in the [Studio Bundle](https://allthepossibles.com).
+
+Listed in the official MCP Registry as `com.allthepossibles/preflight`.
 
 ## Reporting a false positive or false negative
 
@@ -67,5 +72,5 @@ not by us guessing in private.
 
 ## Support
 
-Open an issue in this repo. That's it — no ticket system, no SLA yet, just a
+Open an issue in this repo. That's it, no ticket system, no SLA yet, just a
 real person reading it.
